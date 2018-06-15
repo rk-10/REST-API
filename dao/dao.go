@@ -32,3 +32,30 @@ func (m *MoviesDAO) Connect()  {
 
 	db = session.DB(m.Database)
 }
+
+func (m *MoviesDAO) FindAll(id string) ([]Movie, error)  {
+	var movies []Movie
+	err := db.C(COLLECTION).Find(bson.M{}).All(&movies)
+	return movies, err
+}
+
+func (m *MoviesDAO) FindbyId(id string)  (Movie, error) {
+	var movie Movie
+	err := db.C(COLLECTION).FindId(bson.ObjectIdHex(id)).One(&movie)
+	return movie, err
+}
+
+func (m *MoviesDAO) Insert(movie Movie) error  {
+	err := db.C(COLLECTION).Insert(&movie)
+	return err
+}
+
+func (m *MoviesDAO) Remove(movie Movie) error  {
+	err := db.C(COLLECTION).Remove(&movie)
+	return err
+}
+
+func (m *MoviesDAO) Update(movie Movie) error  {
+	err := db.C(COLLECTION).UpdateId(movie.ID, &movie)
+	return err
+}
