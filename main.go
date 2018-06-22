@@ -5,8 +5,9 @@ import (
 	"log"
 	"fmt"
 	"github.com/gorilla/mux"
+	"encoding/json"
+	. "github.com/rk-10/REST-API/models"
 )
-
 
 func AllMoviesEndPoint(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(w, "Not implemented yet")
@@ -17,6 +18,12 @@ func FindMovieEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	var movie Movie
+	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
+		return
+	}
+
 	fmt.Fprintln(w, "not implemented yet !")
 }
 
