@@ -45,8 +45,8 @@ func DeleteMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func init()  {
-	dao.Server = ""
-	dao.Database = ""
+	dao.Server = "" //TODO
+	dao.Database = "" //TODO
 	dao.Connect()
 }
 
