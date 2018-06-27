@@ -4,14 +4,9 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2"
 	"log"
+	. "github.com/rk-10/REST-API/models"
 )
 
-type Movie struct {
-	ID bson.ObjectId	`bson:"id" json:"id"`
-	Name string			`bson:"name" json:"name"`
-	CoverImage string	`bson:"cover_image" json:"cover_image"`
-	Description string	`bson:"description" json:"description"`
-}
 
 type MoviesDAO struct {
 	Server string
@@ -27,7 +22,7 @@ const (
 func (m *MoviesDAO) Connect()  {
 	session, err := mgo.Dial(m.Server)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Could not connect to mongo", err)
 	}
 
 	db = session.DB(m.Database)

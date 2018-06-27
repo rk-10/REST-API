@@ -9,6 +9,7 @@ import (
 	. "github.com/rk-10/REST-API/models"
 	"gopkg.in/mgo.v2/bson"
 	. "github.com/rk-10/REST-API/dao"
+	"bytes"
 )
 
 var dao = MoviesDAO{}
@@ -28,12 +29,25 @@ func CreateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("400 - Bad request. Please check all parameters."))
+		fmt.Println("Error in params")
 		return
 	}
 	movie.ID = bson.NewObjectId()
-	
 
-	fmt.Fprintln(w, "not implemented yet !")
+	if err := dao.Insert(movie); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("400 - Could not store data to db"))
+		fmt.Println("Data to db could not be stored")
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	//w.Header().Add("Content-Type", "application/json")
+
+	var buffer bytes.Buffer
+	buffer.WriteString(`{Response: Success}`)
+	json.NewEncoder(w).Encode(buffer.String())
 }
 
 func UpdateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -45,8 +59,8 @@ func DeleteMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func init()  {
-	dao.Server = "" //TODO
-	dao.Database = "" //TODO
+	dao.Server = "localhost:27017"
+	dao.Database = "test"
 	dao.Connect()
 }
 
@@ -58,7 +72,9 @@ func main()  {
 	r.HandleFunc("/movies", UpdateMovieEndPoint).Methods("PUT")
 	r.HandleFunc("/movies", DeleteMovieEndPoint).Methods("DELETE")
 	r.HandleFunc("/movies/{id}", FindMovieEndpoint).Methods("GET")
-	http.ListenAndServe(":3000", r)
+	if err := http.ListenAndServe(":3000", r); err != nil {
+		log.Fatal("Error", err)
+	}
+	//http.ListenAndServe(":3000", r)
 	//http.Handle("/", r)
-	log.Fatal("Error")
 }
