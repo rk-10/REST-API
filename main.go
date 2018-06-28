@@ -48,6 +48,8 @@ func CreateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 	var buffer bytes.Buffer
 	buffer.WriteString(`{Response: Success}`)
 	json.NewEncoder(w).Encode(buffer.String())
+
+	fmt.Println("Data stored to db")
 }
 
 func UpdateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -75,6 +77,5 @@ func main()  {
 	if err := http.ListenAndServe(":3000", r); err != nil {
 		log.Fatal("Error", err)
 	}
-	//http.ListenAndServe(":3000", r)
-	//http.Handle("/", r)
+	fmt.Println("Server is up and running on port 3000")
 }
