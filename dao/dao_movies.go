@@ -28,7 +28,7 @@ func (m *MoviesDAO) Connect()  {
 	db = session.DB(m.Database)
 }
 
-func (m *MoviesDAO) FindAll(id string) ([]Movie, error)  {
+func (m *MoviesDAO) FindAll() ([]Movie, error)  {
 	var movies []Movie
 	err := db.C(COLLECTION).Find(bson.M{}).All(&movies)
 	return movies, err

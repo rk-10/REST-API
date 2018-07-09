@@ -16,7 +16,17 @@ var dao = MoviesDAO{}
 
 
 func AllMoviesEndPoint(w http.ResponseWriter, r *http.Request)  {
-	fmt.Println(w, "Not implemented yet")
+	movies, err := dao.FindAll()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("400 - Bad request. Please check all parameters."))
+		fmt.Println("Error in params")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(movies)
+	w.WriteHeader(http.StatusOK)
 }
 
 func FindMovieEndpoint(w http.ResponseWriter, r *http.Request) {
