@@ -53,8 +53,6 @@ func CreateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 
-	//w.Header().Add("Content-Type", "application/json")
-
 	var buffer bytes.Buffer
 	buffer.WriteString(`{Response: Success}`)
 	json.NewEncoder(w).Encode(buffer.String())
@@ -63,7 +61,29 @@ func CreateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "not implemented yet !")
+	defer r.Body.Close()
+	var movie Movie
+	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("400 - Bad request. Please check all parameters."))
+		fmt.Println("Error in params")
+		return
+	}
+
+	if err := dao.Update(movie); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("400 - Something went wrong with the server"))
+		fmt.Println("Error in updating")
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	var buffer bytes.Buffer
+	buffer.WriteString(`{Response: Success}`)
+	json.NewEncoder(w).Encode(buffer.String())
+
+	fmt.Println("Movie updated to db")
 }
 
 func DeleteMovieEndPoint(w http.ResponseWriter, r *http.Request) {
