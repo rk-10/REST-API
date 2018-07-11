@@ -30,7 +30,19 @@ func AllMoviesEndPoint(w http.ResponseWriter, r *http.Request)  {
 }
 
 func FindMovieEndpoint(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "not implemented yet !")
+	params := mux.Vars(r)
+	movie, err := dao.FindbyId(params["id"]); if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("400 - Bad request. Please check all parameters."))
+		fmt.Println("Error in params")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(movie)
+	w.WriteHeader(http.StatusOK)
+
+	fmt.Fprintln(w, "Movie found !")
 }
 
 func CreateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
