@@ -19,13 +19,15 @@ const (
 	COLLECTION = "movies"
 )
 
-func (m *MoviesDAO) Connect()  {
+func (m *MoviesDAO) Connect()  (bool){
 	session, err := mgo.Dial(m.Server)
 	if err != nil {
 		log.Fatal("Could not connect to mongo", err)
+		return false
 	}
 
 	db = session.DB(m.Database)
+	return true
 }
 
 func (m *MoviesDAO) FindAll() ([]Movie, error)  {
