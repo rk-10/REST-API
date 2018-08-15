@@ -28,7 +28,7 @@ func AllMoviesEndPoint(w http.ResponseWriter, r *http.Request)  {
 	movies, err := dao.FindAll()
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
-		fmt.Println("Error in params")
+		log.Fatal("Error in params")
 		return
 	}
 
@@ -39,12 +39,12 @@ func FindMovieEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	movie, err := dao.FindbyId(params["id"]); if err != nil {
 		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
-		fmt.Println("Error in params")
+		log.Fatal("Error in params")
 		return
 	}
 
 	respondWithJson(w, http.StatusOK, movie)
-	fmt.Fprintln(w, "Movie found !")
+	log.Print(w, "Movie found !")
 }
 
 func CreateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -52,19 +52,19 @@ func CreateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 	var movie Movie
 	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
 		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
-		fmt.Println("Error in params")
+		log.Fatal("Error in params")
 		return
 	}
 	movie.ID = bson.NewObjectId()
 
 	if err := dao.Insert(movie); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Could not store data to db")
-		fmt.Println("Data to db could not be stored")
+		log.Fatal("Data to db could not be stored")
 		return
 	}
 
 	respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
-	fmt.Println("Data stored to db")
+	log.Print("Data stored to db")
 }
 
 func UpdateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -72,18 +72,18 @@ func UpdateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 	var movie Movie
 	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
 		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
-		fmt.Println("Error in params")
+		log.Fatal("Error in params")
 		return
 	}
 
 	if err := dao.Update(movie); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Could not store data to db")
-		fmt.Println("Error in updating")
+		log.Fatal("Error in updating")
 		return
 	}
 
 	respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
-	fmt.Println("Movie updated to db")
+	log.Print("Movie updated to db")
 }
 
 func DeleteMovieEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +91,7 @@ func DeleteMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 	var movie Movie
 	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
 		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
-		fmt.Println("Error in params")
+		log.Fatal("Errror in params")
 		return
 	}
 
@@ -102,7 +102,7 @@ func DeleteMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
-	fmt.Fprintln(w, "Movie deleted from db")
+	log.Print("Movie deleted from db")
 }
 
 func init()  {
@@ -122,5 +122,5 @@ func main()  {
 	if err := http.ListenAndServe(":3000", r); err != nil {
 		log.Fatal("Error", err)
 	}
-	fmt.Println("Server is up and running on port 3000")
+	log.Print("Server is up and running on port 3000")
 }
