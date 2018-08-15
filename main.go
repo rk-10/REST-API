@@ -9,39 +9,41 @@ import (
 	. "github.com/rk-10/REST-API/models"
 	"gopkg.in/mgo.v2/bson"
 	. "github.com/rk-10/REST-API/dao"
-	"bytes"
 )
 
 var dao = MoviesDAO{}
 
+func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
+}
+
+func respondWithError(w http.ResponseWriter, code int, msg string)  {
+	respondWithJson(w, code, map[string]string{"error": msg})
+}
 
 func AllMoviesEndPoint(w http.ResponseWriter, r *http.Request)  {
 	movies, err := dao.FindAll()
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 - Bad request. Please check all parameters."))
+		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
 		fmt.Println("Error in params")
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(movies)
-	w.WriteHeader(http.StatusOK)
+	respondWithJson(w, http.StatusOK, movies)
 }
 
 func FindMovieEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	movie, err := dao.FindbyId(params["id"]); if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 - Bad request. Please check all parameters."))
+		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
 		fmt.Println("Error in params")
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(movie)
-	w.WriteHeader(http.StatusOK)
-
+	respondWithJson(w, http.StatusOK, movie)
 	fmt.Fprintln(w, "Movie found !")
 }
 
@@ -49,26 +51,19 @@ func CreateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var movie Movie
 	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 - Bad request. Please check all parameters."))
+		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
 		fmt.Println("Error in params")
 		return
 	}
 	movie.ID = bson.NewObjectId()
 
 	if err := dao.Insert(movie); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("400 - Could not store data to db"))
+		respondWithError(w, http.StatusInternalServerError, "Could not store data to db")
 		fmt.Println("Data to db could not be stored")
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-
-	var buffer bytes.Buffer
-	buffer.WriteString(`{Response: Success}`)
-	json.NewEncoder(w).Encode(buffer.String())
-
+	respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
 	fmt.Println("Data stored to db")
 }
 
@@ -76,25 +71,18 @@ func UpdateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var movie Movie
 	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 - Bad request. Please check all parameters."))
+		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
 		fmt.Println("Error in params")
 		return
 	}
 
 	if err := dao.Update(movie); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 - Something went wrong with the server"))
+		respondWithError(w, http.StatusInternalServerError, "Could not store data to db")
 		fmt.Println("Error in updating")
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-
-	var buffer bytes.Buffer
-	buffer.WriteString(`{Response: Success}`)
-	json.NewEncoder(w).Encode(buffer.String())
-
+	respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
 	fmt.Println("Movie updated to db")
 }
 
@@ -102,25 +90,18 @@ func DeleteMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var movie Movie
 	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 - Bad request. Please check all parameters."))
+		respondWithError(w, http.StatusBadRequest, "400 - Bad request. Please check all parameters.")
 		fmt.Println("Error in params")
 		return
 	}
 
 	if err := dao.Remove(movie); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 - Something went wrong with the server"))
+		respondWithError(w, http.StatusInternalServerError, "Could not store data to db")
 		fmt.Println("Error in updating")
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-
-	var buffer bytes.Buffer
-	buffer.WriteString(`{Response: Success}`)
-	json.NewEncoder(w).Encode(buffer.String())
-
+	respondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
 	fmt.Fprintln(w, "Movie deleted from db")
 }
 
