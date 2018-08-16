@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"encoding/json"
-	. "github.com/rk-10/REST-API/models"
 	"gopkg.in/mgo.v2/bson"
+	. "github.com/rk-10/REST-API/models"
 	. "github.com/rk-10/REST-API/dao"
+	. "github.com/rk-10/REST-API/config"
 )
 
 var dao = MoviesDAO{}
+var config = Config{}
 
 func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
@@ -106,8 +108,9 @@ func DeleteMovieEndPoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func init()  {
-	dao.Server = "localhost:27017"
-	dao.Database = "test"
+	config.Read()
+	dao.Server = config.Server
+	dao.Database = config.Database
 	dao.Connect()
 }
 
