@@ -1,13 +1,13 @@
-#REST-API
+# REST-API
 REST-API in golang for CRUD'ing movies in mongoDB. 
 
-#Requirements
+# Requirements
 - Golang
 - Mongo DB
 - Postman to test the API's
 
-#Run
-```go run main.go```  
+# Run
+`$ go run main.go`  
 
-#License
+# License
 MIT
