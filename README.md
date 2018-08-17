@@ -7,7 +7,13 @@ REST-API in golang for CRUD'ing movies in mongoDB.
 - Postman to test the API's
 
 # Run
+Edit config file to set sever port and database. 
+Then in the project directory run
+
 `$ go run main.go`  
+
+# Running Tests
+`$ go test ./tests/*`
 
 # License
 MIT
