@@ -6,13 +6,15 @@ import (
 	"net/http/httptest"
 
 	"github.com/gorilla/mux"
+	"fmt"
 )
 
 
-func getMovies(t *testing.T)  {
-	req, _ := http.NewRequest("GET", "/", nil)
+func TestGetMovies(t *testing.T)  {
+	req, _ := http.NewRequest("GET", "http://localhost:3000/", nil)
 	response := executeRequest(req)
 
+	fmt.Println(response)
 	if response.Code != http.StatusOK {
 		t.Error("Expected status code to be 200")
 	}
