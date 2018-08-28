@@ -33,7 +33,6 @@ func AllMoviesEndPoint(w http.ResponseWriter, r *http.Request)  {
 		log.Fatal("Error in params")
 		return
 	}
-	fmt.Println(movies)
 	respondWithJson(w, http.StatusOK, movies)
 }
 
