@@ -46,7 +46,6 @@ func TestFindAllMovies(t *testing.T)  {
 	}
 
 	Movie = movie[0]
-	t.Log(movie)
 
 	if err != nil {
 		t.Error(err)
@@ -58,8 +57,6 @@ func TestFindAllMovies(t *testing.T)  {
 }
 
 func TestFindMovieById(t *testing.T)  {
-
-	t.Log(baseUrl + "movies/" + Movie.ID.Hex())
 
 	req, _ := http.NewRequest("GET", baseUrl + "movies/" + Movie.ID.Hex() , nil)
 	res, err := http.DefaultClient.Do(req)
@@ -99,6 +96,24 @@ func TestUpdateMovie(t *testing.T)  {
 	}
 }
 
-//func TestDeleteMovie(t *testing.T)  {
-//
-//}
+func TestDeleteMovie(t *testing.T)  {
+	var jsonStr = []byte(`
+{	
+	"id": "` + Movie.ID.Hex() + `", 
+	"name": "Lala Land",
+	"description": "Oscar winning movie!"
+}`)
+
+	req, _ := http.NewRequest("DELETE", baseUrl + "movies", bytes.NewBuffer(jsonStr))
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if res.StatusCode != 200 {
+		t.Error(`Wrong status code`)
+	}
+}
